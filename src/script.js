@@ -716,7 +716,7 @@ const drawChart = (data) => {
 }
 
 d3.json('data/spy.json').then(data => {
-    drawChart(data);
+    drawChart(data.data);
 });
 
 // drawChart(data);
