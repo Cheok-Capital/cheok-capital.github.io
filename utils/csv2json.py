@@ -7,7 +7,7 @@ data = {
     'data': []
 }
 
-with open('utils/spy.csv', newline='') as f:
+with open('utils/wfc.csv', newline='') as f:
     for row in csv.reader(f):
         d = datetime.strptime(row[1], "%d-%b-%Y").replace(tzinfo=timezone.utc)
         millis = d.timestamp() * 1000
@@ -22,5 +22,5 @@ with open('utils/spy.csv', newline='') as f:
 
 data['data'] = sorted(data['data'], key=lambda x: x['timestamp'])
 
-with open('data/spy.json', 'w') as f:
+with open('data/wfc.json', 'w') as f:
     json.dump(data, f,  indent=2)
