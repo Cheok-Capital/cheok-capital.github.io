@@ -24,5 +24,3 @@ data['data'] = sorted(data['data'], key=lambda x: x['timestamp'])
 
 with open('data/spy.json', 'w') as f:
     json.dump(data, f,  indent=2)
-        
-
