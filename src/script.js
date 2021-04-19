@@ -1253,7 +1253,7 @@ const responsivefy = svg => {
 const drawChart = (control, active) => {
     const margin = { top: 50, right: 80, bottom: 50, left: 80 };
     const width = document.getElementById('chart').clientWidth - margin.left - margin.right; // Use the window's width
-    const height = (window.innerHeight * 0.8) - margin.top - margin.bottom; // Use the window's height
+    const height = (window.innerHeight * 0.7) - margin.top - margin.bottom; // Use the window's height
 
     // add chart SVG to the page
     const svg = d3
