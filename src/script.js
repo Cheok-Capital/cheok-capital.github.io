@@ -26,6 +26,10 @@ const responsivefy = svg => {
     d3.select(window).on('resize.' + container.attr('id'), resize);
 };
 
+const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 const normalize = (data, base, key) => {
     const earliestPoint = d3.least(data, (a) => a.timestamp);
     const normalized = [];
@@ -85,24 +89,13 @@ d3.json('data/spy.json').then(spy => {
             .append('g')
             .attr('id', 'xAxis')
             .attr('transform', `translate(0, ${height})`)
-            .call(d3.axisBottom(xScale));
-
-        svg
-            .append('g')
-            .attr('id', 'yAxis')
-            .call(d3.axisLeft(yScale));
-
-        svg.append("text")
-            .attr("text-anchor", "end")
-            .attr("y", 6)
-            .attr("dy", ".75em")
-            .attr("transform", "rotate(-90)")
-            .text("USD");
+            .call(d3.axisBottom(xScale).tickSize(0).ticks(4));
 
         const line = d3
             .line()
             .x(d => xScale(d.timestamp))
-            .y(d => yScale(d.normalized));
+            .y(d => yScale(d.normalized))
+            .curve(d3.curveMonotoneX);
 
         svg
             .append('path')
@@ -134,24 +127,78 @@ d3.json('data/spy.json').then(spy => {
             .attr('id', 'cheokChart')
             .attr('stroke-width', '2');
 
-        const cheokCapitalLabel = svg.append("text")
-            .data([normalizedCheok[normalizedCheok.length - 1]])
+        svg.append("text")
+            .data([normalizedCheok[0]])
             .attr("transform", d => {
                 return `translate(${ xScale(d.timestamp)}, ${ yScale(d.normalized)})`;
             })
-            .attr("x", 5)
+            .attr("x", -60)
             .attr("dy", "0.35em")
-            // .style("fill", "#00d1b2")
+            .style("font-size", "14px")
+            .text("$10,000");
+
+        const cheokG = svg.append("g").data([{
+            first: normalizedCheok[0],
+            last: normalizedCheok[normalizedCheok.length - 1]
+        }]);
+
+        const cheokLatestLiquidation = cheokG.append("text")
+            .attr("transform", d => {
+                return `translate(${ xScale(d.first.timestamp)}, ${ yScale(d.last.normalized)})`;
+            })
+            .attr("x", -60)
+            .attr("dy", "0.35em")
             .style("font-size", "14px")
             .style("font-weight", "bold")
-            .text("The Dream");
+            .text(d => {
+                return `$${numberWithCommas(Math.floor(d.last.normalized))}`;
+            });
 
-        d3.timer((elapsed) => {
-            const hue = `hsl(${(elapsed / 6) % 360}, 100%, 50%)`;
+        cheokG.append("line")
+            .style("stroke", "grey")
+            .style("stroke-dasharray", ("2, 2"))
+            .style("opacity", 0.4)
+            .attr("transform", d => {
+                return `translate(${ xScale(d.first.timestamp)}, ${ yScale(d.last.normalized)})`;
+            })
+            .attr("x2", d => {
+                return xScale(d.last.timestamp);
+            })
 
+        const spyG = svg.append("g").data([{
+            first: normalizedSpy[0],
+            last: normalizedSpy[normalizedSpy.length - 1]
+        }]);
+
+        spyG.append("text")
+            .attr("transform", d => {
+                return `translate(${ xScale(d.first.timestamp)}, ${ yScale(d.last.normalized)})`;
+            })
+            .attr("x", -60)
+            .attr("dy", "0.35em")
+            .style("font-size", "14px")
+            .text(d => {
+                return `$${numberWithCommas(Math.floor(d.last.normalized))}`;
+            });
+
+        spyG.append("line")
+            .style("stroke", "grey")
+            .style("stroke-dasharray", ("2, 2"))
+            .style("opacity", 0.4)
+            .attr("transform", d => {
+                return `translate(${ xScale(d.first.timestamp)}, ${ yScale(d.last.normalized)})`;
+            })
+            .attr("x2", d => {
+                return xScale(d.last.timestamp);
+            })
+
+
+        let i = 0;
+        d3.timer(() => {
+            const hue = `hsl(${i % 360}, 100%, 50%)`;
             d3.select("#cheokChart").attr("stroke", hue);
-
-            cheokCapitalLabel.style("fill", hue)
+            cheokLatestLiquidation.style("fill", hue);
+            i += 1;
         });
     });
 });
