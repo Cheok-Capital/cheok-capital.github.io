@@ -1,1 +1,19 @@
-{"data":[{"liquidationValue":100805.04,"timestamp":1619031268796},{"liquidationValue":100804.44,"timestamp":1619031449425},{"liquidationValue":100213.44,"timestamp":1619093339343},{"liquidationValue":99916.88,"timestamp":1619107382267},{"liquidationValue":99990.54,"timestamp":1619107528676}]}
+{
+    "data": [
+        { "liquidationValue": 85386.93, "timestamp": 1609430400000 },
+        { "liquidationValue": 74775.10, "timestamp": 1612108800000 },
+        { "liquidationValue": 98432.77, "timestamp": 1614528000000 },
+        { "liquidationValue": 112146.42, "timestamp": 1617206400000 },
+        { "liquidationValue": 100805.04, "timestamp": 1619031268796 },
+        { "liquidationValue": 100804.44, "timestamp": 1619031449425 },
+        { "liquidationValue": 100213.44, "timestamp": 1619093339343 },
+        {
+            "liquidationValue": 100805.04,
+            "timestamp": 1619031268796
+        },
+        { "liquidationValue": 100804.44, "timestamp": 1619031449425 },
+        { "liquidationValue": 100213.44, "timestamp": 1619093339343 },
+        { "liquidationValue": 99916.88, "timestamp": 1619107382267 },
+        { "liquidationValue": 99990.54, "timestamp": 1619107528676 }
+    ]
+}
