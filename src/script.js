@@ -81,8 +81,7 @@ const drawLines = (...lineConfigs) => {
     const line = d3
         .line()
         .x(d => xScale(d.timestamp))
-        .y(d => yScale(d.normalized))
-        .curve(d3.curveBasis);
+        .y(d => yScale(d.normalized));
 
     for (const lineConfig of lineConfigs) {
         const path = svg
@@ -135,7 +134,7 @@ d3.json('data/spy.json').then(spy => {
 
         d3.timer((elapsed) => {
             d3.select("#cheokChart")
-                .attr("stroke", () => `hsl(${(elapsed / 20) % 360}, 100%, 50%)`)
+                .attr("stroke", () => `hsl(${(elapsed / 2) % 360}, 100%, 50%)`)
         });
     });
 });
