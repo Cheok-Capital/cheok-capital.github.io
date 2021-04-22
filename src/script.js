@@ -26,76 +26,6 @@ const responsivefy = svg => {
     d3.select(window).on('resize.' + container.attr('id'), resize);
 };
 
-const drawLines = (...lineConfigs) => {
-    const margin = { top: 50, right: 80, bottom: 50, left: 80 };
-    const width = document.getElementById('chart').clientWidth - margin.left - margin.right; // Use the window's width
-    const height = (window.innerHeight * 0.7) - margin.top - margin.bottom; // Use the window's height
-
-    // add chart SVG to the page
-    const svg = d3
-        .select('#chart')
-        .append('svg')
-        .attr('width', width + margin['left'] + margin['right'])
-        .attr('height', height + margin['top'] + margin['bottom'])
-        .call(responsivefy)
-        .append('g')
-        .attr('transform', `translate(${margin['left']}, ${margin['top']})`);
-
-    // create the axes component
-
-    // find data range
-    const xMin = d3.min(lineConfigs, config => d3.min(config.data, d => d.timestamp));
-    const xMax = d3.max(lineConfigs, config => d3.max(config.data, d => d.timestamp));
-    const yMin = d3.min(lineConfigs, config => d3.min(config.data, d => d.normalized));
-    const yMax = d3.max(lineConfigs, config => d3.max(config.data, d => d.normalized));
-
-    // scale using range
-    const xScale = d3
-        .scaleTime()
-        .domain([xMin, xMax])
-        .range([0, width]);
-
-    const yScale = d3
-        .scaleLinear()
-        .domain([yMin * 0.99, yMax])
-        .range([height, 0]);
-
-    svg
-        .append('g')
-        .attr('id', 'xAxis')
-        .attr('transform', `translate(0, ${height})`)
-        .call(d3.axisBottom(xScale));
-
-    svg
-        .append('g')
-        .attr('id', 'yAxis')
-        .call(d3.axisLeft(yScale));
-
-    svg.append("text")
-        .attr("text-anchor", "end")
-        .attr("y", 6)
-        .attr("dy", ".75em")
-        .attr("transform", "rotate(-90)")
-        .text("USD");
-
-    const line = d3
-        .line()
-        .x(d => xScale(d.timestamp))
-        .y(d => yScale(d.normalized));
-
-    for (const lineConfig of lineConfigs) {
-        const path = svg
-            .append('path')
-            .data([lineConfig.data])
-            .style('fill', 'none')
-            .attr('d', line);
-
-        Object.keys(lineConfig.attributes).forEach((attributeKey) => {
-            path.attr(attributeKey, lineConfig.attributes[attributeKey]);
-        });
-    }
-}
-
 const normalize = (data, base, key) => {
     const earliestPoint = d3.least(data, (a) => a.timestamp);
     const normalized = [];
@@ -117,24 +47,111 @@ d3.json('data/spy.json').then(spy => {
         const normalizedSpy = normalize(spy.data, GROWTH_BASE_AMOUNT, 'close');
         const normalizedCheok = normalize(cheok.data, GROWTH_BASE_AMOUNT, 'liquidationValue');
 
-        drawLines({
-            data: normalizedSpy,
-            attributes: {
-                id: 'spyChart',
-                stroke: '#00d1b2',
-                'stroke-width': '0.5'
-            }
-        }, {
-            data: normalizedCheok,
-            attributes: {
-                id: 'cheokChart',
-                'stroke-width': '2'
-            }
-        });
+        const margin = { top: 50, right: 80, bottom: 50, left: 80 };
+        const width = document.getElementById('chart').clientWidth - margin.left - margin.right; // Use the window's width
+        const height = (window.innerHeight * 0.7) - margin.top - margin.bottom; // Use the window's height
+
+        // add chart SVG to the page
+        const svg = d3
+            .select('#chart')
+            .append('svg')
+            .attr('width', width + margin['left'] + margin['right'])
+            .attr('height', height + margin['top'] + margin['bottom'])
+            .call(responsivefy)
+            .append('g')
+            .attr('transform', `translate(${margin['left']}, ${margin['top']})`);
+
+        // create the axes component
+
+        // find data range
+        const combined = [...normalizedCheok, ...normalizedSpy]
+        const xMin = d3.min(combined, d => d.timestamp);
+        const xMax = d3.max(combined, d => d.timestamp);
+        const yMin = d3.min(combined, d => d.normalized);
+        const yMax = d3.max(combined, d => d.normalized);
+
+        // scale using range
+        const xScale = d3
+            .scaleTime()
+            .domain([xMin, xMax])
+            .range([0, width]);
+
+        const yScale = d3
+            .scaleLinear()
+            .domain([yMin * 0.99, yMax])
+            .range([height, 0]);
+
+        svg
+            .append('g')
+            .attr('id', 'xAxis')
+            .attr('transform', `translate(0, ${height})`)
+            .call(d3.axisBottom(xScale));
+
+        svg
+            .append('g')
+            .attr('id', 'yAxis')
+            .call(d3.axisLeft(yScale));
+
+        svg.append("text")
+            .attr("text-anchor", "end")
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text("USD");
+
+        const line = d3
+            .line()
+            .x(d => xScale(d.timestamp))
+            .y(d => yScale(d.normalized));
+
+        svg
+            .append('path')
+            .data([normalizedSpy])
+            .style('fill', 'none')
+            .attr('d', line)
+            .attr('id', 'spyChart')
+            .attr('stroke', '#00d1b2')
+            .attr('stroke-width', '2')
+            .attr('opacity', '0.3');
+
+        svg
+            .append("text")
+            .data([normalizedSpy[normalizedSpy.length - 1]])
+            .attr("transform", d => {
+                return `translate(${ xScale(d.timestamp)}, ${ yScale(d.normalized)})`;
+            })
+            .attr("x", 5)
+            .attr("dy", "0.35em")
+            .style("fill", "#00d1b2")
+            .style("font-size", "14px")
+            .text("SPY");
+
+        svg
+            .append('path')
+            .data([normalizedCheok])
+            .style('fill', 'none')
+            .attr('d', line)
+            .attr('id', 'cheokChart')
+            .attr('stroke-width', '2');
+
+        const cheokCapitalLabel = svg.append("text")
+            .data([normalizedCheok[normalizedCheok.length - 1]])
+            .attr("transform", d => {
+                return `translate(${ xScale(d.timestamp)}, ${ yScale(d.normalized)})`;
+            })
+            .attr("x", 5)
+            .attr("dy", "0.35em")
+            // .style("fill", "#00d1b2")
+            .style("font-size", "14px")
+            .style("font-weight", "bold")
+            .text("The Dream");
 
         d3.timer((elapsed) => {
-            d3.select("#cheokChart")
-                .attr("stroke", () => `hsl(${(elapsed / 2) % 360}, 100%, 50%)`)
+            const hue = `hsl(${(elapsed / 6) % 360}, 100%, 50%)`;
+
+            d3.select("#cheokChart").attr("stroke", hue);
+
+            cheokCapitalLabel.style("fill", hue)
         });
     });
 });
