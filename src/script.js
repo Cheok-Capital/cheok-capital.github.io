@@ -85,8 +85,8 @@ d3.json('data/spy.json').then(spy => {
 
         const yScale = d3
             .scaleLinear()
-            .domain([yMin * 0.90, yMax])
-            .range([height, 0]);
+            .domain([yMin, yMax])
+            .range([height * 0.9, 0]);
 
 
         // Drawing bottom axis
@@ -131,7 +131,7 @@ d3.json('data/spy.json').then(spy => {
             .append("text")
             .data([normalizedSpy[normalizedSpy.length - 1]])
             .attr("transform", d => {
-                return `translate(${ xScale(d.timestamp)}, ${ yScale(d.normalized)})`;
+                return `translate(${xScale(d.timestamp)}, ${yScale(d.normalized)})`;
             })
             .attr("x", 5)
             .attr("dy", "0.35em")
@@ -152,9 +152,10 @@ d3.json('data/spy.json').then(spy => {
         svg.append("text")
             .data([normalizedCheok[0]])
             .attr("transform", d => {
-                return `translate(${ xScale(xMin)}, ${ yScale(d.normalized)})`;
+                return `translate(${xScale(xMin)}, ${yScale(d.normalized)})`;
             })
-            .attr("x", -60)
+            .attr("text-anchor", "end")
+            .attr("x", -10)
             .attr("dy", "0.35em")
             .style("font-size", "14px")
             .text(`$${numberWithCommas(GROWTH_BASE_AMOUNT)}`);
@@ -164,9 +165,7 @@ d3.json('data/spy.json').then(spy => {
             .style("stroke", "grey")
             .style("stroke-dasharray", ("2, 2"))
             .style("opacity", 0.4)
-            .attr("transform", d => {
-                return `translate(${ xScale(xMin)}, ${yScale(GROWTH_BASE_AMOUNT)})`;
-            })
+            .attr("transform", `translate(${xScale(xMin)}, ${yScale(GROWTH_BASE_AMOUNT)})`)
             .attr("x2", d => {
                 return xScale(xMax);
             });
@@ -178,9 +177,10 @@ d3.json('data/spy.json').then(spy => {
 
         const cheokLatestLiquidation = cheokG.append("text")
             .attr("transform", d => {
-                return `translate(${ xScale(xMin)}, ${ yScale(d.last.normalized)})`;
+                return `translate(${xScale(xMin)}, ${yScale(d.last.normalized)})`;
             })
-            .attr("x", -60)
+            .attr("x", -10)
+            .attr("text-anchor", "end")
             .attr("dy", "0.35em")
             .style("font-size", "14px")
             .style("font-weight", "bold")
@@ -193,7 +193,7 @@ d3.json('data/spy.json').then(spy => {
             .style("stroke-dasharray", ("2, 2"))
             .style("opacity", 0.4)
             .attr("transform", d => {
-                return `translate(${ xScale(xMin)}, ${ yScale(d.last.normalized)})`;
+                return `translate(${xScale(xMin)}, ${yScale(d.last.normalized)})`;
             })
             .attr("x2", d => {
                 return xScale(d.last.timestamp);
@@ -206,9 +206,10 @@ d3.json('data/spy.json').then(spy => {
 
         spyG.append("text")
             .attr("transform", d => {
-                return `translate(${ xScale(d.first.timestamp)}, ${ yScale(d.last.normalized)})`;
+                return `translate(${xScale(d.first.timestamp)}, ${yScale(d.last.normalized)})`;
             })
-            .attr("x", -60)
+            .attr("x", -10)
+            .attr("text-anchor", "end")
             .attr("dy", "0.35em")
             .style("font-size", "14px")
             .text(d => {
@@ -220,7 +221,7 @@ d3.json('data/spy.json').then(spy => {
             .style("stroke-dasharray", ("2, 2"))
             .style("opacity", 0.4)
             .attr("transform", d => {
-                return `translate(${ xScale(d.first.timestamp)}, ${ yScale(d.last.normalized)})`;
+                return `translate(${xScale(d.first.timestamp)}, ${yScale(d.last.normalized)})`;
             })
             .attr("x2", d => {
                 return xScale(d.last.timestamp);
@@ -231,19 +232,16 @@ d3.json('data/spy.json').then(spy => {
             .style("stroke", "grey")
             .style("stroke-dasharray", ("2, 2"))
             .style("opacity", 0.4)
-            .attr("transform", d => {
-                return `translate(${ xScale(xMin)}, ${yScale(yMin)})`;
-            })
+            .attr("transform", `translate(${xScale(xMin)}, ${yScale(yMin)})`)
             .attr("x2", d => {
                 return xScale(xMax);
             })
 
         // Chart floor label
         spyG.append("text")
-            .attr("transform", d => {
-                return `translate(${ xScale(xMin)}, ${yScale(yMin)})`;
-            })
-            .attr("x", -60)
+            .attr("transform", `translate(${xScale(xMin)}, ${yScale(yMin)})`)
+            .attr("x", -10)
+            .attr("text-anchor", "end")
             .attr("dy", "0.35em")
             .style("font-size", "14px")
             .text(`$${numberWithCommas(Math.floor(yMin))}`);
@@ -253,19 +251,16 @@ d3.json('data/spy.json').then(spy => {
             .style("stroke", "grey")
             .style("stroke-dasharray", ("2, 2"))
             .style("opacity", 0.4)
-            .attr("transform", d => {
-                return `translate(${ xScale(xMin)}, ${yScale(yMax)})`;
-            })
+            .attr("transform", `translate(${xScale(xMin)}, ${yScale(yMax)})`)
             .attr("x2", d => {
                 return xScale(xMax);
             });
 
         // Chart ceiling label
         spyG.append("text")
-            .attr("transform", d => {
-                return `translate(${ xScale(xMin)}, ${yScale(yMax)})`;
-            })
-            .attr("x", -60)
+            .attr("transform", `translate(${xScale(xMin)}, ${yScale(yMax)})`)
+            .attr("x", -10)
+            .attr("text-anchor", "end")
             .attr("dy", "0.35em")
             .style("font-size", "14px")
             .text(`$${numberWithCommas(Math.floor(yMax))}`);
