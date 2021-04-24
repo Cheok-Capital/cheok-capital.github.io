@@ -85,20 +85,37 @@ d3.json('data/spy.json').then(spy => {
 
         const yScale = d3
             .scaleLinear()
-            .domain([yMin * 0.99, yMax])
+            .domain([yMin * 0.90, yMax])
             .range([height, 0]);
 
-        svg
-            .append('g')
-            .attr('id', 'xAxis')
+
+        // Drawing bottom axis
+        svg.append("line")
+            .style("stroke", "grey")
             .attr('transform', `translate(0, ${height})`)
-            .call(d3.axisBottom(xScale).tickSize(0).ticks(4));
+            .attr("x2", d => {
+                return xScale(xMax);
+            });
+
+        svg.append("text")
+            .attr('transform', `translate(${xScale(xMin)}, ${height})`)
+            .attr('dy', '1em')
+            .style("opacity", "0.5")
+            .text(moment(xMin).format("DD/MM/YYYY"));
+
+        svg.append("text")
+            .attr('transform', `translate(${xScale(xMax)}, ${height})`)
+            .attr('dy', '1em')
+            .style("opacity", "0.5")
+            .attr("text-anchor", "end")
+            .text(moment(xMax).format("DD/MM/YYYY"));
 
         const line = d3
             .line()
             .x(d => xScale(d.timestamp))
             .y(d => yScale(d.normalized));
 
+        // "SPY" path
         svg
             .append('path')
             .data([normalizedSpy])
@@ -107,8 +124,9 @@ d3.json('data/spy.json').then(spy => {
             .attr('id', 'spyChart')
             .attr('stroke', '#00d1b2')
             .attr('stroke-width', '2')
-            .attr('opacity', '0.3');
+            .attr('opacity', '0.4');
 
+        // "SPY" line label
         svg
             .append("text")
             .data([normalizedSpy[normalizedSpy.length - 1]])
@@ -121,6 +139,7 @@ d3.json('data/spy.json').then(spy => {
             .style("font-size", "14px")
             .text("SPY");
 
+        // Cheok path
         svg
             .append('path')
             .data([normalizedCheok])
@@ -129,15 +148,28 @@ d3.json('data/spy.json').then(spy => {
             .attr('id', 'cheokChart')
             .attr('stroke-width', '2');
 
+        // Base value
         svg.append("text")
             .data([normalizedCheok[0]])
             .attr("transform", d => {
-                return `translate(${ xScale(d.timestamp)}, ${ yScale(d.normalized)})`;
+                return `translate(${ xScale(xMin)}, ${ yScale(d.normalized)})`;
             })
             .attr("x", -60)
             .attr("dy", "0.35em")
             .style("font-size", "14px")
-            .text("$10,000");
+            .text(`$${numberWithCommas(GROWTH_BASE_AMOUNT)}`);
+
+        // Base line
+        svg.append("line")
+            .style("stroke", "grey")
+            .style("stroke-dasharray", ("2, 2"))
+            .style("opacity", 0.4)
+            .attr("transform", d => {
+                return `translate(${ xScale(xMin)}, ${yScale(GROWTH_BASE_AMOUNT)})`;
+            })
+            .attr("x2", d => {
+                return xScale(xMax);
+            });
 
         const cheokG = svg.append("g").data([{
             first: normalizedCheok[0],
@@ -146,7 +178,7 @@ d3.json('data/spy.json').then(spy => {
 
         const cheokLatestLiquidation = cheokG.append("text")
             .attr("transform", d => {
-                return `translate(${ xScale(d.first.timestamp)}, ${ yScale(d.last.normalized)})`;
+                return `translate(${ xScale(xMin)}, ${ yScale(d.last.normalized)})`;
             })
             .attr("x", -60)
             .attr("dy", "0.35em")
@@ -161,7 +193,7 @@ d3.json('data/spy.json').then(spy => {
             .style("stroke-dasharray", ("2, 2"))
             .style("opacity", 0.4)
             .attr("transform", d => {
-                return `translate(${ xScale(d.first.timestamp)}, ${ yScale(d.last.normalized)})`;
+                return `translate(${ xScale(xMin)}, ${ yScale(d.last.normalized)})`;
             })
             .attr("x2", d => {
                 return xScale(d.last.timestamp);
@@ -194,6 +226,49 @@ d3.json('data/spy.json').then(spy => {
                 return xScale(d.last.timestamp);
             })
 
+        // Chart floor line
+        svg.append("line")
+            .style("stroke", "grey")
+            .style("stroke-dasharray", ("2, 2"))
+            .style("opacity", 0.4)
+            .attr("transform", d => {
+                return `translate(${ xScale(xMin)}, ${yScale(yMin)})`;
+            })
+            .attr("x2", d => {
+                return xScale(xMax);
+            })
+
+        // Chart floor label
+        spyG.append("text")
+            .attr("transform", d => {
+                return `translate(${ xScale(xMin)}, ${yScale(yMin)})`;
+            })
+            .attr("x", -60)
+            .attr("dy", "0.35em")
+            .style("font-size", "14px")
+            .text(`$${numberWithCommas(Math.floor(yMin))}`);
+
+        // Chart ceiling line
+        svg.append("line")
+            .style("stroke", "grey")
+            .style("stroke-dasharray", ("2, 2"))
+            .style("opacity", 0.4)
+            .attr("transform", d => {
+                return `translate(${ xScale(xMin)}, ${yScale(yMax)})`;
+            })
+            .attr("x2", d => {
+                return xScale(xMax);
+            });
+
+        // Chart ceiling label
+        spyG.append("text")
+            .attr("transform", d => {
+                return `translate(${ xScale(xMin)}, ${yScale(yMax)})`;
+            })
+            .attr("x", -60)
+            .attr("dy", "0.35em")
+            .style("font-size", "14px")
+            .text(`$${numberWithCommas(Math.floor(yMax))}`);
 
         let i = 0;
         d3.timer(() => {
