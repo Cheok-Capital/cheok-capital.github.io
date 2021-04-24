@@ -68,11 +68,13 @@ d3.json('data/spy.json').then(spy => {
         // create the axes component
 
         // find data range
-        const combined = [...normalizedCheok, ...normalizedSpy]
-        const xMin = d3.min(combined, d => d.timestamp);
-        const xMax = d3.max(combined, d => d.timestamp);
-        const yMin = d3.min(combined, d => d.normalized);
-        const yMax = d3.max(combined, d => d.normalized);
+        const combined = [normalizedCheok, normalizedSpy]
+
+        // Performing clamps
+        const xMin = d3.max(combined.map((data) => d3.min(data, d => d.timestamp)));
+        const xMax = d3.min(combined.map((data) => d3.max(data, d => d.timestamp)));
+        const yMin = d3.max(combined.map((data) => d3.min(data, d => d.normalized)));
+        const yMax = d3.min(combined.map((data) => d3.max(data, d => d.normalized)));
 
         // scale using range
         const xScale = d3
@@ -94,8 +96,7 @@ d3.json('data/spy.json').then(spy => {
         const line = d3
             .line()
             .x(d => xScale(d.timestamp))
-            .y(d => yScale(d.normalized))
-            .curve(d3.curveMonotoneX);
+            .y(d => yScale(d.normalized));
 
         svg
             .append('path')
