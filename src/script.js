@@ -70,11 +70,12 @@ d3.json('data/spy.json').then(spy => {
         // find data range
         const combined = [normalizedCheok, normalizedSpy]
 
-        // Performing clamps
+        // Performing clamps for time x-axis, i.e. taking max of mins, and mins of maxes
         const xMin = d3.max(combined.map((data) => d3.min(data, d => d.timestamp)));
         const xMax = d3.min(combined.map((data) => d3.max(data, d => d.timestamp)));
-        const yMin = d3.max(combined.map((data) => d3.min(data, d => d.normalized)));
-        const yMax = d3.min(combined.map((data) => d3.max(data, d => d.normalized)));
+
+        const yMin = d3.min(combined.map((data) => d3.min(data, d => d.normalized)));
+        const yMax = d3.max(combined.map((data) => d3.max(data, d => d.normalized)));
 
         // scale using range
         const xScale = d3
