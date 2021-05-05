@@ -50,20 +50,23 @@ d3.json('data/spy.json').then(spy => {
     d3.json('data/cheok.json').then(cheok => {
         const normalizedSpy = normalize(spy.data, GROWTH_BASE_AMOUNT, 'close');
         const normalizedCheok = normalize(cheok.data, GROWTH_BASE_AMOUNT, 'liquidationValue');
+        const docWidth = document.getElementById('chart').clientWidth;
 
-        const margin = { top: 50, right: 80, bottom: 50, left: 80 };
-        const width = document.getElementById('chart').clientWidth - margin.left - margin.right; // Use the window's width
-        const height = (window.innerHeight * 0.7) - margin.top - margin.bottom; // Use the window's height
+        const margin = { top: docWidth * 0.1 * 0.6, right: (docWidth * 2 / 30) + 10 , bottom: docWidth * 0.1 * 0.6, left: (docWidth * 2 / 30) + 30 };
+        const width = docWidth - margin.left - margin.right; // Use the window's width
+        const height = (docWidth - margin.left - margin.right) * 0.6; // use set width to maintain ratio
 
         // add chart SVG to the page
         const svg = d3
             .select('#chart')
             .append('svg')
-            .attr('width', width + margin['left'] + margin['right'])
-            .attr('height', height + margin['top'] + margin['bottom'])
+            .classed("svg-container", true)
+            .attr('viewBox', `0 0 ${width + margin['left'] + margin['right']} ${height + margin['top'] + margin['bottom']}`)
             .call(responsivefy)
             .append('g')
             .attr('transform', `translate(${margin['left']}, ${margin['top']})`);
+
+        const responsiveFontSize = d => `${9 + (width / 120)}px`
 
         // create the axes component
 
@@ -101,6 +104,7 @@ d3.json('data/spy.json').then(spy => {
             .attr('transform', `translate(${xScale(xMin)}, ${height})`)
             .attr('dy', '1em')
             .style("opacity", "0.5")
+            .style("font-size", responsiveFontSize)
             .text(moment(xMin).format("DD/MM/YYYY"));
 
         svg.append("text")
@@ -108,6 +112,7 @@ d3.json('data/spy.json').then(spy => {
             .attr('dy', '1em')
             .style("opacity", "0.5")
             .attr("text-anchor", "end")
+            .style("font-size", responsiveFontSize)
             .text(moment(xMax).format("DD/MM/YYYY"));
 
         const line = d3
@@ -136,7 +141,7 @@ d3.json('data/spy.json').then(spy => {
             .attr("x", 5)
             .attr("dy", "0.35em")
             .style("fill", "#00d1b2")
-            .style("font-size", "14px")
+            .style("font-size", responsiveFontSize)
             .text("SPY");
 
         // Cheok path
@@ -157,7 +162,7 @@ d3.json('data/spy.json').then(spy => {
             .attr("text-anchor", "end")
             .attr("x", -10)
             .attr("dy", "0.35em")
-            .style("font-size", "14px")
+            .style("font-size", responsiveFontSize)
             .text(`$${numberWithCommas(GROWTH_BASE_AMOUNT)}`);
 
         // Base line
@@ -182,7 +187,7 @@ d3.json('data/spy.json').then(spy => {
             .attr("x", -10)
             .attr("text-anchor", "end")
             .attr("dy", "0.35em")
-            .style("font-size", "14px")
+            .style("font-size", responsiveFontSize)
             .style("font-weight", "bold")
             .text(d => {
                 return `$${numberWithCommas(Math.floor(d.last.normalized))}`;
@@ -211,7 +216,7 @@ d3.json('data/spy.json').then(spy => {
             .attr("x", -10)
             .attr("text-anchor", "end")
             .attr("dy", "0.35em")
-            .style("font-size", "14px")
+            .style("font-size", responsiveFontSize)
             .text(d => {
                 return `$${numberWithCommas(Math.floor(d.last.normalized))}`;
             });
@@ -243,7 +248,7 @@ d3.json('data/spy.json').then(spy => {
             .attr("x", -10)
             .attr("text-anchor", "end")
             .attr("dy", "0.35em")
-            .style("font-size", "14px")
+            .style("font-size", responsiveFontSize)
             .text(`$${numberWithCommas(Math.floor(yMin))}`);
 
         // Chart ceiling line
@@ -262,7 +267,7 @@ d3.json('data/spy.json').then(spy => {
             .attr("x", -10)
             .attr("text-anchor", "end")
             .attr("dy", "0.35em")
-            .style("font-size", "14px")
+            .style("font-size", responsiveFontSize)
             .text(`$${numberWithCommas(Math.floor(yMax))}`);
 
         let i = 0;
