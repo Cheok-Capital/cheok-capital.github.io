@@ -54,20 +54,14 @@ d3.json('data/spy.json').then(spy => {
 
         const margin = { top: docWidth * 0.1 * 0.6, right: (docWidth * 2 / 30) + 10 , bottom: docWidth * 0.1 * 0.6, left: (docWidth * 2 / 30) + 30 };
         const width = docWidth - margin.left - margin.right; // Use the window's width
-        // const height = (window.innerHeight * 0.7) - margin.top - margin.bottom; // Use the window's height
         const height = (docWidth - margin.left - margin.right) * 0.6; // use set width to maintain ratio
 
-        // console.log(docWidth)
-        // console.log(width)
-        // console.log((docWidth * 2 / 30) + 30)
         // add chart SVG to the page
         const svg = d3
             .select('#chart')
             .append('svg')
             .classed("svg-container", true)
             .attr('viewBox', `0 0 ${width + margin['left'] + margin['right']} ${height + margin['top'] + margin['bottom']}`)
-            // .attr('width', width + margin['left'] + margin['right'])
-            // .attr('height', height + margin['top'] + margin['bottom'])
             .call(responsivefy)
             .append('g')
             .attr('transform', `translate(${margin['left']}, ${margin['top']})`);
