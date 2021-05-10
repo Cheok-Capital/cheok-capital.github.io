@@ -72,6 +72,7 @@ d3.json('data/spy.json').then(spy => {
 
         // find data range
         const combined = [normalizedCheok, normalizedSpy]
+        console.log(combined)
 
         // Performing clamps for time x-axis, i.e. taking max of mins, and mins of maxes
         const xMin = d3.max(combined.map((data) => d3.min(data, d => d.timestamp)));
