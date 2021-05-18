@@ -1,19 +1,12 @@
-const arrayer = (data, key) => {
-	const arrayed = [];
+d3.json('data/xirr.json').then((cheok) => {
+	const xirrCheok = arrayer(cheok.data, 'xirr');
 
-	for (let i = 0; i < data.length; i++) {
-		const current = { ...data[i] };
-		const arrayEle = current[key];
-		current.arrayed = arrayEle;
-		arrayed.push(current);
+	var n;
+	for (n = 0; n < xirrCheok.length; n++) {
+		xirrCheok[n].arrayed = Number(parseFloat(xirrCheok[n].xirr * 100).toFixed(2));
 	}
 
-	return arrayed;
-};
-
-d3.json('data/cheok.json').then((cheok) => {
-	const arrayedCheok = arrayer(cheok.data, 'liquidationValue');
-	const docWidth = document.getElementById('chart2').clientWidth;
+	const docWidth = document.getElementById('chart3').clientWidth;
 
 	const margin = {
 		top: docWidth * 0.1 * 0.6,
@@ -26,7 +19,7 @@ d3.json('data/cheok.json').then((cheok) => {
 
 	// add chart SVG to the page
 	const svg = d3
-		.select('#chart2')
+		.select('#chart3')
 		.append('svg')
 		.classed('svg-container', true)
 		.attr('viewBox', `0 0 ${width + margin['left'] + margin['right']} ${height + margin['top'] + margin['bottom']}`)
@@ -41,11 +34,11 @@ d3.json('data/cheok.json').then((cheok) => {
 	// find data range
 
 	// Performing clamps for time x-axis, i.e. taking max of mins, and mins of maxes
-	const xMin = d3.min(arrayedCheok, (d) => d.timestamp);
-	const xMax = d3.max(arrayedCheok, (d) => d.timestamp);
+	const xMin = d3.min(xirrCheok, (d) => d.timestamp);
+	const xMax = d3.max(xirrCheok, (d) => d.timestamp);
 
-	const yMin = d3.min(arrayedCheok, (d) => d.arrayed);
-	const yMax = d3.max(arrayedCheok, (d) => d.arrayed);
+	const yMin = d3.min(xirrCheok, (d) => d.arrayed);
+	const yMax = d3.max(xirrCheok, (d) => d.arrayed);
 
 	// scale using range
 	const xScale = d3.scaleTime().domain([ xMin, xMax ]).range([ 0, width ]);
@@ -74,23 +67,25 @@ d3.json('data/cheok.json').then((cheok) => {
 		.style('font-size', responsiveFontSize)
 		.text(moment(xMax).format('DD/MM/YYYY'));
 
-	const neLiqLine = d3.line().x((d) => xScale(d.timestamp)).y((d) => yScale(d.arrayed));
+	const xirrLine = d3.line().x((d) => xScale(d.timestamp)).y((d) => yScale(d.arrayed));
 
 	// Cheok path
 	svg
 		.append('path')
-		.data([ arrayedCheok ])
+		.data([ xirrCheok ])
 		.style('fill', 'none')
-		.attr('d', neLiqLine)
+		.attr('d', xirrLine)
 		.attr('id', 'cheokChart')
 		.attr('stroke', '#00d1b2')
 		.attr('stroke-width', '2')
 		.attr('opacity', '0.4');
 
+	console.log(xirrCheok);
+
 	// Base value
 	svg
 		.append('text')
-		.data([ arrayedCheok[0] ])
+		.data([ xirrCheok[0] ])
 		.attr('transform', (d) => {
 			return `translate(${xScale(xMin)}, ${yScale(d.arrayed)})`;
 		})
@@ -98,7 +93,7 @@ d3.json('data/cheok.json').then((cheok) => {
 		.attr('x', -10)
 		.attr('dy', '0.35em')
 		.style('font-size', responsiveFontSize)
-		.text(`$${numberWithCommas(arrayedCheok[0].arrayed)}`);
+		.text(`${numberWithCommas(xirrCheok[0].arrayed)}%`);
 
 	// Base line
 	svg
@@ -106,15 +101,15 @@ d3.json('data/cheok.json').then((cheok) => {
 		.style('stroke', 'grey')
 		.style('stroke-dasharray', '2, 2')
 		.style('opacity', 0.4)
-		.attr('transform', `translate(${xScale(xMin)}, ${yScale(arrayedCheok[0].arrayed)})`)
+		.attr('transform', `translate(${xScale(xMin)}, ${yScale(xirrCheok[0].arrayed)})`)
 		.attr('x2', (d) => {
 			return xScale(xMax);
 		});
 
 	const cheokG = svg.append('g').data([
 		{
-			first: arrayedCheok[0],
-			last: arrayedCheok[arrayedCheok.length - 1]
+			first: xirrCheok[0],
+			last: xirrCheok[xirrCheok.length - 1]
 		}
 	]);
 
@@ -129,7 +124,7 @@ d3.json('data/cheok.json').then((cheok) => {
 		.style('font-size', responsiveFontSize)
 		.style('font-weight', 'bold')
 		.text((d) => {
-			return `$${numberWithCommas(Math.floor(d.last.arrayed))}`;
+			return `${numberWithCommas(d.last.arrayed)}%`;
 		});
 
 	cheokG
@@ -163,7 +158,7 @@ d3.json('data/cheok.json').then((cheok) => {
 		.attr('text-anchor', 'end')
 		.attr('dy', '0.35em')
 		.style('font-size', responsiveFontSize)
-		.text(`$${numberWithCommas(Math.floor(yMin))}`);
+		.text(`${numberWithCommas(yMin)}%`);
 
 	// Chart ceiling line
 	svg
@@ -184,7 +179,7 @@ d3.json('data/cheok.json').then((cheok) => {
 		.attr('text-anchor', 'end')
 		.attr('dy', '0.35em')
 		.style('font-size', responsiveFontSize)
-		.text(`$${numberWithCommas(Math.floor(yMax))}`);
+		.text(`${numberWithCommas(yMax)}%`);
 
 	let i = 0;
 	d3.timer(() => {
