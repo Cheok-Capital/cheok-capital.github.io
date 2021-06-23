@@ -44,12 +44,27 @@ const normalize = (data, base, key) => {
     return normalized;
 }
 
+const twrRebase = (data, base, key) => {
+    const normalized = [];
+
+    for (let i = 0; i < data.length; i++) {
+        const current = {...data[i] };
+        const normValue = base * ((current[key]/100) + 1);
+        current.normalized = normValue;
+        normalized.push(current);
+    }
+
+    return normalized;
+}
+
 const GROWTH_BASE_AMOUNT = 10000;
 
 d3.json('data/spy.json').then(spy => {
-    d3.json('data/cheok.json').then(cheok => {
+    d3.json('data/twr.json').then(cheok => {
         const normalizedSpy = normalize(spy.data, GROWTH_BASE_AMOUNT, 'close');
-        const normalizedCheok = normalize(cheok.data, GROWTH_BASE_AMOUNT, 'liquidationValue');
+        const normalizedCheok = twrRebase(cheok.data, GROWTH_BASE_AMOUNT, 'twr');
+        // console.log(normalizedSpy)
+        // console.log(normalizedCheok)
         const docWidth = document.getElementById('chart').clientWidth;
 
         const margin = { top: docWidth * 0.1 * 0.6, right: (docWidth * 2 / 30) + 10 , bottom: docWidth * 0.1 * 0.6, left: (docWidth * 2 / 30) + 30 };

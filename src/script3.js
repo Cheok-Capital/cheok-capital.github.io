@@ -80,8 +80,6 @@ d3.json('data/xirr.json').then((cheok) => {
 		.attr('stroke-width', '2')
 		.attr('opacity', '0.4');
 
-	console.log(xirrCheok);
-
 	// Base value
 	svg
 		.append('text')
