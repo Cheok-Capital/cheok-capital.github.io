@@ -202,7 +202,7 @@ d3.json('data/spy.json').then(spy => {
             .attr("dy", "0.35em")
             .style("font-size", responsiveFontSize)
             .text(d => {
-                return `${numberWithCommas(Math.floor(d.last.arrayed))}%`;
+                return `${Number(parseFloat(d.last.arrayed).toFixed(2))}%`;
             });
 
         spyG.append("line")
