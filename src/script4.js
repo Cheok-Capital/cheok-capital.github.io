@@ -127,7 +127,7 @@ d3.json('data/spy.json').then(spy => {
           .style("fill", "none")
           .attr("d", twrLine)
           .attr("id", "cheokChart")
-          .attr("stroke", "#7d47002")
+          .attr("stroke", "#ea00f2")
           .attr("stroke-width", "2")
           .attr("opacity", "0.4");
 
@@ -202,7 +202,7 @@ d3.json('data/spy.json').then(spy => {
             .attr("dy", "0.35em")
             .style("font-size", responsiveFontSize)
             .text(d => {
-                return `$${numberWithCommas(Math.floor(d.last.arrayed))}`;
+                return `${numberWithCommas(Math.floor(d.last.arrayed))}%`;
             });
 
         spyG.append("line")
