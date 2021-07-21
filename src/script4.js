@@ -122,14 +122,14 @@ d3.json('data/spy.json').then(spy => {
 
         // Cheok path
         svg
-            .append('path')
-            .data([twrCheok])
-            .style('fill', 'none')
-            .attr('d', twrLine)
-            .attr('id', 'cheokChart')
-            .attr('stroke', '#00d1b2')
-            .attr('stroke-width', '2')
-            .attr('opacity', '0.4');
+          .append("path")
+          .data([twrCheok])
+          .style("fill", "none")
+          .attr("d", twrLine)
+          .attr("id", "cheokChart")
+          .attr("stroke", "#7d47002")
+          .attr("stroke-width", "2")
+          .attr("opacity", "0.4");
 
         // Base value
         svg
